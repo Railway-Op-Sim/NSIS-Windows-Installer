@@ -1,0 +1,4 @@
+*.dll
+*.exe
+RailOSPkgManager/
+Railway_Operation_Simulator/
