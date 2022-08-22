@@ -27,13 +27,14 @@ Name "Railway Operation Simulator"
 InstallDir "$PROGRAMFILES32\Railway_Operation_Simulator"
 VIFileVersion "${VERSION}"
 VIProductVersion "${VERSION}"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "$Name"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "${Name}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© Railway Operation Simulator Development Team"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Railway signalling simulation software"
 
 Section "Railway Operation Simulator" MainSoftware
     SetOutPath "$INSTDIR"
+    File "media\railos.ico"
     File "Railway_Operation_Simulator\railway.exe"
     File "Railway_Operation_Simulator\*.dll"
     CreateDirectory "$OUTDIR\Formatted timetables"
@@ -46,6 +47,12 @@ Section "Railway Operation Simulator" MainSoftware
     CreateDirectory "$OUTDIR\Railways"
     CreateDirectory "$OUTDIR\Sessions"
     WriteUninstaller "$OUTDIR\Uninstall.exe"
+    WriteRegStr HKCU "Software\Railway_Operation_Simulator\Railway_Operation_Simulator" "DisplayName" "Railway Operation Simulator"
+    WriteRegStr HKCU "Software\Railway_Operation_Simulator\Railway_Operation_Simulator" "UninstallString" "$INSTDIR\Railway_Operation_Simulator\Uninstall.exe"
+    WriteRegStr HKCU "Software\Railway_Operation_Simulator\Railway_Operation_Simulator" "DisplayIcon" "$INSTDIR\Railway_Operation_Simulator\railos.ico"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GUPSTEST" "HelpLink" "https://www.railwayoperationsimulator.com/catalog/base-program/railway-operation-simulator-manuals"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GUPSTEST" "URLInfoAbout" "https://www.railwayoperationsimulator.com"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GUPSTEST" "HelpLink" "https://www.railwayoperationsimulator.com"
 SectionEnd
 
 Section /o "RailOSPkgManager" PackageManager
@@ -56,6 +63,7 @@ SectionEnd
 
 Section "Uninstall"
     DELETE "$INSTDIR"
+    DeleteRegKey HKLM "Software\Railway_Operation_Simulator\Railway_Operation_Simulator"
 SectionEnd
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
