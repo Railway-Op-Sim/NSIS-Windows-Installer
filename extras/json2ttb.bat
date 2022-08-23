@@ -1,1 +1,1 @@
-java -jar %RAILOS_HOME%\Utilities\json2ttb\json2ttb.jar %*
+java -jar "%RAILOS_HOME%\Utilities\json2ttb\json2ttb.jar" %*

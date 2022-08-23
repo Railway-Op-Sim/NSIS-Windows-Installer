@@ -107,7 +107,7 @@ SectionEnd
 Section "un.Railway Operation Simulator"
     RMDir /r "$INSTDIR"
     EnVar::Delete "RAILOS_HOME"
-    EnVar::DeleteValue "PATH" "$\"$INSTDIR\Utilities\json2ttb$\""
+    EnVar::DeleteValue "PATH" "$INSTDIR\Utilities\json2ttb"
     DeleteRegKey HKLM "${UNINSTALL_KEYLOC}"
 	delete "$SMPROGRAMS\${APP_NAME}\*.lnk"
 	rmDir "$SMPROGRAMS\${APP_NAME}"
