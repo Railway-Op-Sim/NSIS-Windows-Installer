@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+set -e
+java -jar "${RAILOS_HOME}/Utilities/json2ttb/json2ttb.jar" $@
