@@ -1,10 +1,11 @@
 Unicode True
 
+; Set metadata for the RailOS release here
 !define VERSION "2.13.1.0"
 !define APP_EXE "railway.exe"
 
 ShowInstDetails show
-OutFile "Install_RailOs.exe"
+OutFile "Install_RailOS.exe"
 
 !include "MUI2.nsh"
 
@@ -35,8 +36,10 @@ OutFile "Install_RailOs.exe"
 
 !insertmacro MUI_LANGUAGE "English"
 
+; Descriptions for the components
 LangString DESC_Section1 ${LANG_ENGLISH} "Install the main simulation software."
 LangString DESC_Section2 ${LANG_ENGLISH} "A package manager for Railway Operation Simulator which provides a quick and easy way to manage route add-ons."
+LangString DESC_Section3 ${LANG_ENGLISH} "A Java application which can create an ROS timetable from a structured JSON timetable (Requires Java)."
 
 Name "${APP_NAME}"
 InstallDir "$PROGRAMFILES32\Railway_Operation_Simulator"
@@ -57,10 +60,10 @@ FunctionEnd
 
 Section "${APP_NAME}" MainSoftware
     SectionIn RO
-    SetOutPath "$INSTDIR"
+    SetOutPath "$INSTDIR\Railway"
     File "media\railos.ico"
-    File "Railway_Operation_Simulator\${APP_EXE}"
-    File "Railway_Operation_Simulator\*.dll"
+    File "Railway_Operation_Simulator\Railway\${APP_EXE}"
+    File "Railway_Operation_Simulator\Railway\*.dll"
     EnVar::AddValue "RAILOS_HOME" "$INSTDIR"
     CreateDirectory "$OUTDIR\Formatted timetables"
     CreateDirectory "$OUTDIR\Documentation"
@@ -88,11 +91,21 @@ SectionEnd
 
 Section /o "RailOSPkgManager" PackageManager
     SetOutPath "$INSTDIR\Utilities\RailOSPkgManager"
+
+    ; Copy all required files for the package manager
     File "RailOSPkgManager\RailOSPkgManager.exe"
     File "RailOSPkgManager\railospkgmanager.ico"
     File "RailOSPkgManager\*.dll"
     File /r "RailOSPkgManager\platforms"
     File /r "RailOSPkgManager\translations"
+
+    ; Create the cache file to point to the RailOS install so the user doesn't have to set it
+    createDirectory "$%LOCALAPPDATA%\RailOSPkgManager\cache"
+    FileOpen $0 "$%LOCALAPPDATA%\RailOSPkgManager\cache\ros_cfg" w
+    FileWrite $0 "$INSTDIR"
+    FileClose $0
+
+    ; Create a start menu shortcut for the package manager
     createShortCut "$SMPROGRAMS\${APP_NAME}\RailOSPkgManager.lnk" "$OUTDIR\RailOSPkgManager.exe" "" "$OUTDIR\railospkgmanager.ico"
 SectionEnd
 
@@ -110,10 +123,12 @@ Section "un.Railway Operation Simulator"
     EnVar::DeleteValue "PATH" "$INSTDIR\Utilities\json2ttb"
     DeleteRegKey HKLM "${UNINSTALL_KEYLOC}"
 	delete "$SMPROGRAMS\${APP_NAME}\*.lnk"
+    rmDir "$%LOCALAPPDATA%\RailOSPkgManager"
 	rmDir "$SMPROGRAMS\${APP_NAME}"
 SectionEnd
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 !insertmacro MUI_DESCRIPTION_TEXT ${MainSoftware} $(DESC_Section1)
 !insertmacro MUI_DESCRIPTION_TEXT ${PackageManager} $(DESC_Section2)
+!insertmacro MUI_DESCRIPTION_TEXT ${JSON2TTB} $(DESC_Section3)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
