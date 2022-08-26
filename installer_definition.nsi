@@ -23,6 +23,7 @@ OutFile "Install_RailOS.exe"
 !define MULTIUSER_MUI
 
 !include "MultiUser.nsh"
+!include "LogicLib.nsh"
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "LICENSE"
@@ -74,18 +75,18 @@ Section "${APP_NAME}" MainSoftware
     CreateDirectory "$OUTDIR\Program timetables"
     CreateDirectory "$OUTDIR\Railways"
     CreateDirectory "$OUTDIR\Sessions"
-    WriteUninstaller "$OUTDIR\Uninstall.exe"
+    WriteUninstaller "$INSTDIR\Uninstall.exe"
     WriteRegStr HKLM "${UNINSTALL_KEYLOC}" "DisplayName" "${APP_NAME}"
     WriteRegStr HKLM "${UNINSTALL_KEYLOC}" "UninstallString" "$INSTDIR\Uninstall.exe"
     WriteRegStr HKLM "${UNINSTALL_KEYLOC}" "UninstallStringQuiet" "$INSTDIR\Uninstall.exe"
-    WriteRegStr HKLM "${UNINSTALL_KEYLOC}" "DisplayIcon" "$INSTDIR\railos.ico"
+    WriteRegStr HKLM "${UNINSTALL_KEYLOC}" "DisplayIcon" "$OUTDIR\railos.ico"
     WriteRegStr HKLM "${UNINSTALL_KEYLOC}" "DisplayVersion" "${VERSION}"
     WriteRegStr HKLM "${UNINSTALL_KEYLOC}" "Publisher" "${APP_NAME} Development Team"
     WriteRegStr HKLM "${UNINSTALL_KEYLOC}" "HelpLink" "https://www.railwayoperationsimulator.com/catalog/base-program/railway-operation-simulator-manuals"
     WriteRegStr HKLM "${UNINSTALL_KEYLOC}" "URLInfoAbout" "https://www.railwayoperationsimulator.com"
     WriteRegStr HKLM "${UNINSTALL_KEYLOC}" "HelpLink" "https://www.railwayoperationsimulator.com"
 	createDirectory "$SMPROGRAMS\${APP_NAME}"
-	createShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}" "" "$INSTDIR\railos.ico"
+	createShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$OUTDIR\${APP_EXE}" "" "$OUTDIR\railos.ico"
     AccessControl::GrantOnFile "$INSTDIR" "(BU)" "FullAccess"
 SectionEnd
 
@@ -100,7 +101,15 @@ Section /o "RailOSPkgManager" PackageManager
     File /r "RailOSPkgManager\translations"
 
     ; Create the cache file to point to the RailOS install so the user doesn't have to set it
+    ${If} ${FileExists} "$%LOCALAPPDATA%\RailOSPkgManager\cache"
+        rmDir /r "$%LOCALAPPDATA%\RailOSPkgManager\cache"
+        ${If} ${Errors}
+            MessageBox mb_IconStop|mb_TopMost|mb_SetForeground "Failed to create cache directory for RailOSPkgManager"
+        ${EndiF}
+    ${EndIf}
+
     createDirectory "$%LOCALAPPDATA%\RailOSPkgManager\cache"
+    AccessControl::GrantOnFile "$%LOCALAPPDATA%\RailOSPkgManager\cache" "(BU)" "FullAccess"
     FileOpen $0 "$%LOCALAPPDATA%\RailOSPkgManager\cache\ros_cfg" w
     FileWrite $0 "$INSTDIR"
     FileClose $0
