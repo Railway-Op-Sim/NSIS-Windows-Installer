@@ -40,7 +40,6 @@ OutFile "Install_RailOS.exe"
 ; Descriptions for the components
 LangString DESC_Section1 ${LANG_ENGLISH} "Install the main simulation software."
 LangString DESC_Section2 ${LANG_ENGLISH} "A package manager for Railway Operation Simulator which provides a quick and easy way to manage route add-ons."
-LangString DESC_Section3 ${LANG_ENGLISH} "A Java application which can create an ROS timetable from a structured JSON timetable (Requires Java)."
 
 Name "${APP_NAME}"
 InstallDir "$PROGRAMFILES32\Railway_Operation_Simulator"
@@ -63,18 +62,7 @@ Section "${APP_NAME}" MainSoftware
     SectionIn RO
     SetOutPath "$INSTDIR\Railway"
     File "media\railos.ico"
-    File "Railway_Operation_Simulator\Railway\${APP_EXE}"
-    File "Railway_Operation_Simulator\Railway\*.dll"
-    EnVar::AddValue "RAILOS_HOME" "$INSTDIR"
-    CreateDirectory "$OUTDIR\Formatted timetables"
-    CreateDirectory "$OUTDIR\Documentation"
-    CreateDirectory "$OUTDIR\Graphics"
-    CreateDirectory "$OUTDIR\Images"
-    CreateDirectory "$OUTDIR\Metadata"
-    CreateDirectory "$OUTDIR\Performance logs"
-    CreateDirectory "$OUTDIR\Program timetables"
-    CreateDirectory "$OUTDIR\Railways"
-    CreateDirectory "$OUTDIR\Sessions"
+    File /r "Railway_Operation_Simulator\Railway\*"
     WriteUninstaller "$INSTDIR\Uninstall.exe"
     WriteRegStr HKLM "${UNINSTALL_KEYLOC}" "DisplayName" "${APP_NAME}"
     WriteRegStr HKLM "${UNINSTALL_KEYLOC}" "UninstallString" "$INSTDIR\Uninstall.exe"
@@ -118,18 +106,8 @@ Section /o "RailOSPkgManager" PackageManager
     createShortCut "$SMPROGRAMS\${APP_NAME}\RailOSPkgManager.lnk" "$OUTDIR\RailOSPkgManager.exe" "" "$OUTDIR\railospkgmanager.ico"
 SectionEnd
 
-Section /o "json2ttb" JSON2TTB
-    SetOutPath "$INSTDIR\Utilities\json2ttb"
-    File "json2ttb\json2ttb.jar"
-    File "extras\json2ttb"
-    File "extras\json2ttb.bat"
-    EnVar::AddValue "PATH" "$OUTDIR"
-SectionEnd
-
 Section "un.Railway Operation Simulator"
     RMDir /r "$INSTDIR"
-    EnVar::Delete "RAILOS_HOME"
-    EnVar::DeleteValue "PATH" "$INSTDIR\Utilities\json2ttb"
     DeleteRegKey HKLM "${UNINSTALL_KEYLOC}"
 	delete "$SMPROGRAMS\${APP_NAME}\*.lnk"
     rmDir "$%LOCALAPPDATA%\RailOSPkgManager"
@@ -139,5 +117,4 @@ SectionEnd
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 !insertmacro MUI_DESCRIPTION_TEXT ${MainSoftware} $(DESC_Section1)
 !insertmacro MUI_DESCRIPTION_TEXT ${PackageManager} $(DESC_Section2)
-!insertmacro MUI_DESCRIPTION_TEXT ${JSON2TTB} $(DESC_Section3)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
