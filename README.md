@@ -8,9 +8,11 @@ Additional components have been added to the installer to also include optional 
 * [NSIS](https://nsis.sourceforge.io)
 * [EnVar Plugin](https://nsis.sourceforge.io/EnVar_plug-in)
 * [AccessControl Plugin](https://nsis.sourceforge.io/AccessControl_plug-in) (for x86 systems copy the i386 version to `Plugins` folder).
+* [nsisunz Plugin](https://nsis.sourceforge.io/Nsisunz_plug-in)
 * Railway Operation Simulator package (placed in `Railway_Operation_Simulator` folder in the same location as this repository).
 * RailOSPkgManager Package (placed in `RailOSPkgManager` folder in the same location as this repository).
-* Json2TTB `json2ttb.jar` file (placed in `json2ttb` folder in the same locartion as this repository).
+* RailOSLauncher executable and icon file (placed in `RailOSLauncher` folder in the same location as this repository).
+* Json2TTB `json2ttb.jar` file (placed in `json2ttb` folder in the same location as this repository).
 
 ## Compilation
 

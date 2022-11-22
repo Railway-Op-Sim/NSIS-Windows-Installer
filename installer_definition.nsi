@@ -1,7 +1,7 @@
 Unicode True
 
 ; Set metadata for the RailOS release here
-!define VERSION "2.13.1.0"
+!define VERSION "2.13.2.0"
 !define APP_EXE "railway.exe"
 
 ShowInstDetails show
@@ -40,6 +40,7 @@ OutFile "Install_RailOS.exe"
 ; Descriptions for the components
 LangString DESC_Section1 ${LANG_ENGLISH} "Install the main simulation software."
 LangString DESC_Section2 ${LANG_ENGLISH} "A package manager for Railway Operation Simulator which provides a quick and easy way to manage route add-ons."
+LangString DESC_Section3 ${LANG_ENGLISH} "A launcher for Railway Operation Simulator which provides live updates on Discord."
 
 Name "${APP_NAME}"
 InstallDir "$PROGRAMFILES32\Railway_Operation_Simulator"
@@ -106,6 +107,23 @@ Section /o "RailOSPkgManager" PackageManager
     createShortCut "$SMPROGRAMS\${APP_NAME}\RailOSPkgManager.lnk" "$OUTDIR\RailOSPkgManager.exe" "" "$OUTDIR\railospkgmanager.ico"
 SectionEnd
 
+Section /o "RailOS Discord Launcher" DiscordLauncher
+    SetOutPath "$INSTDIR\Railway\Discord"
+
+    ; Copy all required files for the discord launcher
+    File "RailOSLauncher\railos_launcher.exe"
+    File "RailOSLauncher\RailOSLauncher.ico"
+
+    ; Create a start menu shortcut for the launcher
+    createShortCut "$SMPROGRAMS\${APP_NAME}\RailOSLauncher.lnk" "$OUTDIR\railos_launcher.exe" "" "$OUTDIR\RailOSLauncher.ico"
+
+    ; Download the SDK
+    NSISdl::download_quiet https://dl-game-sdk.discordapp.net/3.2.1/discord_game_sdk.zip $0
+
+    SetOutPath "$INSTDIR\Railway\Discord\lib"
+    nsisunz::Unzip /file "discord_game_sdk\lib\x86_64\discord_game_sdk.dll" "$0" "$INSTDIR\Railway\Discord\lib"
+SectionEnd
+
 Section "un.Railway Operation Simulator"
     RMDir /r "$INSTDIR"
     DeleteRegKey HKLM "${UNINSTALL_KEYLOC}"
@@ -117,4 +135,5 @@ SectionEnd
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 !insertmacro MUI_DESCRIPTION_TEXT ${MainSoftware} $(DESC_Section1)
 !insertmacro MUI_DESCRIPTION_TEXT ${PackageManager} $(DESC_Section2)
+!insertmacro MUI_DESCRIPTION_TEXT ${DiscordLauncher} $(DESC_Section3)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
