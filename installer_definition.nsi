@@ -40,7 +40,7 @@ OutFile "Install_RailOS.exe"
 ; Descriptions for the components
 LangString DESC_Section1 ${LANG_ENGLISH} "Install the main simulation software."
 LangString DESC_Section2 ${LANG_ENGLISH} "A package manager for Railway Operation Simulator which provides a quick and easy way to manage route add-ons."
-LangString DESC_Section3 ${LANG_ENGLISH} "A launcher for Railway Operation Simulator which provides live updates on Discord."
+LangString DESC_Section3 ${LANG_ENGLISH} "A launcher for Railway Operation Simulator which provides live updates on Discord. Installation requires internet connection."
 
 Name "${APP_NAME}"
 InstallDir "$PROGRAMFILES32\Railway_Operation_Simulator"
@@ -118,10 +118,19 @@ Section /o "RailOS Discord Launcher" DiscordLauncher
     createShortCut "$SMPROGRAMS\${APP_NAME}\RailOSLauncher.lnk" "$OUTDIR\railos_launcher.exe" "" "$OUTDIR\RailOSLauncher.ico"
 
     ; Download the SDK
-    NSISdl::download_quiet https://dl-game-sdk.discordapp.net/3.2.1/discord_game_sdk.zip $0
+    NSISdl::download_quiet https://dl-game-sdk.discordapp.net/3.2.1/discord_game_sdk.zip "$OUTDIR\discord_game_sdk.zip"
+    Pop $R0
 
-    SetOutPath "$INSTDIR\Railway\Discord\lib"
-    nsisunz::Unzip /file "discord_game_sdk\lib\x86_64\discord_game_sdk.dll" "$0" "$INSTDIR\Railway\Discord\lib"
+    CreateDirectory "$OUTDIR\lib"
+
+    StrCmp $R0 "success" +3
+    MessageBox MB_OK "Failed to download Discord SDK for RailOSLauncher, $R0."
+    Quit
+    nsisunz::UnzipToLog /noextractpath /file "lib\x86_64\discord_game_sdk.dll" "$OUTDIR\discord_game_sdk.zip" "$OUTDIR\lib"
+    Pop $R0
+    StrCmp $R0 "success" +2
+        MessageBox MB_OK "Failed to extract Discord SDK for RailOSLauncher, $R0."
+    Delete "discord_game_sdk.zip"
 SectionEnd
 
 Section "un.Railway Operation Simulator"
